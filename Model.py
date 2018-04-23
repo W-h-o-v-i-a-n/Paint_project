@@ -1,12 +1,9 @@
 # всі дані
-
-default_color = "black"
-default_brush_size = 2
+from tkinter import Canvas, Tk
 
 
 class PaintModel():
-    def create_canv(self):
-        from tkinter import Canvas
+    def __init__(self):
         self.canv = Canvas(self, bg="white")
 
     def setCursor(self, place):
