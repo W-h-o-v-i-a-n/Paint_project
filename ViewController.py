@@ -2,12 +2,11 @@
 from tkinter import *
 
 
-class PaintView(Frame):
-    def __init__(self, model, controller, parent=None):
+class PaintViewController(Frame):
+    def __init__(self, model, parent=None):
         Frame.__init__(self, parent)
 
         self.model = model
-        self.controller = controller
 
         def setUI(self):
             self.parent.title("SimplePaint")  # Устанавливаем название окна
