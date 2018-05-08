@@ -84,7 +84,7 @@ class PaintViewController(PaintModel):
         self.rowconfigure(4, weight=1)  # То же самое для ряда
 
         # Создаем поле для рисования, устанавливаем белый фон
-        self.canv.grid(row=4, column=0, columnspan=14, padx=5, pady=5, sticky=E + W + S + N)
+        self.canv.grid(row=4, column=0, columnspan=15, padx=5, pady=5, sticky=E + W + S + N)
         self.canv.bind("<Button-1>", self.draw_point)
         self.canv.bind("<B1-Motion>", self.paint)  # Привязываем обработчик к канвасу.
         # <B1-Motion> означает "при движении зажатой левой кнопки мыши" вызывать функцию draw
