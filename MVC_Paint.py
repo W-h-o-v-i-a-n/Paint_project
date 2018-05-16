@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import filedialog
 from PIL import ImageGrab
 
 default_color = "black"
@@ -6,15 +7,15 @@ default_brush_size = 2
 
 colors = ['white', 'tan1', 'lavender', 'lightcyan', 'azure', 'chartreuse2', 'greenyellow', 'lightyellow', 'navajowhite', 'bisque', 'peachpuff', 'pink',
           'gray30', 'darkorange1', 'mediumpurple', 'cyan', 'royalblue1', 'green3', 'yellowgreen', 'yellow', 'orange', 'coral', 'indianred1', 'hotpink',
-          'black', 'darkorange4', 'purple', 'cyan3', 'blue2', 'darkgreen', 'olivedrab', 'gold', 'darkorange', 'tomato', 'indianred4', 'deeppink']
+          'black', 'darkorange4', 'purple', 'cyan3', 'blue2', 'darkgreen', 'olivedrab', 'gold', 'darkorange', 'red', 'indianred4', 'deeppink']
 
 
 class PaintModel(Frame):
     def __init__(self, parent=None):
         Frame.__init__(self, parent)
         self.parent = parent
-        self.brush_size_ = IntVar()
-        self.brush_size_.set(5)
+        self._brush_size = IntVar()
+        self._brush_size.set(5)
         self.canv = Canvas(self, bg="white")
         self.old_x: int = None
         self.old_y: int = None
@@ -26,7 +27,7 @@ class PaintModel(Frame):
         self.color = new_color
 
     def set_brush_size(self):
-        self.brush_size = int(self.brush_size_.get())
+        self.brush_size = int(self._brush_size.get())
 
     def draw_point(self, event):
         self.canv.create_oval(event.x - self.brush_size / 2,
@@ -51,7 +52,13 @@ class PaintModel(Frame):
         y = self.winfo_rooty() + self.canv.winfo_y()
         x1 = x + self.canv.winfo_width()
         y1 = y + self.canv.winfo_height()
-        ImageGrab.grab().crop((x, y, x1, y1)).save("image_paint.png")
+
+        try:
+            self.filename = filedialog.asksaveasfilename(initialdir="/", title="Save image",
+                                                     filetypes=(("PNG", "*.png"), ("all files", "*.*")))
+            ImageGrab.grab().crop((x, y, x1, y1)).save(rf"{self.filename}.png")
+
+        except: pass
 
 
 class PaintViewController(PaintModel):
@@ -77,17 +84,16 @@ class PaintViewController(PaintModel):
             self.rowcounter += 1
 
     def setUI(self):
-        self.parent.title("Paint")  # Устанавливаем название окна
+        self.parent.title("Paint")
         self.pack(fill=BOTH, expand=1)  # Размещаем активные элементы на родительском окне
 
-        self.columnconfigure(14,weight=1)  # Даем столбцу возможность растягиваться, благодаря чему кнопки не будут разъезжаться при ресайзе
-        self.rowconfigure(4, weight=1)  # То же самое для ряда
+        self.columnconfigure(14, weight=1)  # возможность растягиваться
+        self.rowconfigure(4, weight=1)
 
         # Создаем поле для рисования, устанавливаем белый фон
         self.canv.grid(row=4, column=0, columnspan=15, padx=5, pady=5, sticky=E + W + S + N)
         self.canv.bind("<Button-1>", self.draw_point)
-        self.canv.bind("<B1-Motion>", self.paint)  # Привязываем обработчик к канвасу.
-        # <B1-Motion> означает "при движении зажатой левой кнопки мыши" вызывать функцию draw
+        self.canv.bind("<B1-Motion>", self.paint)
         self.canv.bind('<ButtonRelease-1>', self.reset)
 
         # Color buttons
@@ -99,10 +105,9 @@ class PaintViewController(PaintModel):
             .grid(row=0, column=13, sticky=W, padx=5)
 
         # Brush size
-
         Label(self, text="Brush size: ").grid(row=3, column=0, padx=5)
 
-        spinbox = Spinbox(self, from_=1, to=228, width=5, textvariable=self.brush_size_, command=self.set_brush_size)
+        spinbox = Spinbox(self, from_=1, to=228, width=5, textvariable=self._brush_size, command=self.set_brush_size)
         spinbox.grid(row=3, column=1, columnspan=2)
 
         Button(self, text='Save image', width=10, command=self.save_image).grid(row=3, column=14, sticky=E)
